@@ -5,6 +5,10 @@ require("dotenv").config();
 // console.log(process.env);
 const characterRouter = require("./api/characters/character.router");
 const { connectMongo } = require("./utils/db");
+const {
+  notFoundHandler,
+  errorHandler,
+} = require("./api/middleware/error.middleware");
 
 // 2. CONFIG
 const PORT = process.env.PORT || 3000;
@@ -29,6 +33,9 @@ app.get("/", (req, res) => {
 app.use("/characters", characterRouter);
 
 // 4. MANEJO EXCEPCIONES / ERRORES
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // 5. ACTIVAR
 app.listen(PORT, () => {

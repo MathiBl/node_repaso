@@ -1,7 +1,6 @@
 const User = require("./user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { setError } = require("../../utils/error");
 
 const register = async (req, res, next) => {
   try {
@@ -9,7 +8,7 @@ const register = async (req, res, next) => {
 
     const userExist = await User.findOne({ email: user.email });
     if (userExist) {
-      return next(setError("404", "This email has already been used."));
+      return new Error("This email has already been used.");
     }
     const userDB = await user.save();
     return res.status(201).json({
@@ -30,10 +29,10 @@ const login = async (req, res, next) => {
       const token = jwt.sign(
         {
           id: userInfo._id,
-          name: userInfo.name,
+          email: userInfo.email,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "30m" }
       );
 
       return res.status(200).json({
@@ -42,7 +41,7 @@ const login = async (req, res, next) => {
     } else {
       return res.json({
         status: 400,
-        message: HTTPSTATUSCODE[400],
+        message: "Invalid credentials",
         data: null,
       });
     }
@@ -59,7 +58,7 @@ const logout = (req, res, next) => {
       message: "Logout successful",
     });
   } catch (error) {
-    return next(setError(error.statusCode, "Logout Error"));
+    return next(error);
   }
 };
 

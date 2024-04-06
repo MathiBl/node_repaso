@@ -11,11 +11,13 @@ const {
   deleteOne,
 } = require("./character.controller");
 
-characterRouter.post("/", create);
+const { isAuth } = require("./../middleware/auth.middleware");
+
+characterRouter.post("/", [isAuth], create);
 characterRouter.get("/:id", getOne);
 characterRouter.get("/", getAll);
 characterRouter.get("/name/:name", getOneByName);
-characterRouter.patch("/:id", updateOne);
-characterRouter.delete("/:id", deleteOne);
+characterRouter.patch("/:id", [isAuth], updateOne);
+characterRouter.delete("/:id", [isAuth], deleteOne);
 
 module.exports = characterRouter;
